@@ -12,10 +12,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <SessionWrapper>
+  
       <html lang="en">
-        <body>{children}</body>
+
+        <body> <SessionWrapper>{children} </SessionWrapper> </body>
       </html>
-    </SessionWrapper>
   );
 }
