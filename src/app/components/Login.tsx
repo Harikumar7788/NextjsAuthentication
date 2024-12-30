@@ -1,36 +1,34 @@
-// app/auth/register.tsx
-
 'use client'
 
+import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
 
-export default function Register() {
+export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
     })
 
-    if (res.ok) {
-      router.push("/auth/signin")
+    if (res?.error) {
+      alert("Invalid credentials")
     } else {
-      alert("User already exists")
+      router.push("/dashboard")
     }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="p-6 max-w-md w-full bg-white rounded shadow">
-        <h2 className="text-2xl font-bold mb-4">Register</h2>
-        <form onSubmit={handleRegister}>
+        <h2 className="text-2xl font-bold mb-4">Sign In</h2>
+        <form onSubmit={handleSubmit}>
           <input
             type="email"
             placeholder="Email"
@@ -45,8 +43,8 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
             className="border p-2 w-full mb-4"
           />
-          <button type="submit" className="w-full bg-green-500 text-white p-2 rounded">
-            Register
+          <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+            Sign In
           </button>
         </form>
         <div className="mt-4">
