@@ -1,5 +1,5 @@
 import React from "react";
-import Register from "@/app/components/ui/Register";
+import Register from "@/components/ui/Register";
 export default function RegisterPage() {
   return (
     <div className="p-6">

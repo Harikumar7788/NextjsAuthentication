@@ -1,8 +1,8 @@
 'use client';  
 
 import React from 'react';
-import Dashboard from './components/ui/Dashboard';
-import Header from './components/ui/Header';
+import Dashboard from '../components/ui/Dashboard';
+import Header from '../components/ui/Header';
 // import { useRouter } from 'next/router';
 
 const LandingPage = () => {
