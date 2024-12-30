@@ -2,6 +2,7 @@
 
 import { useSession, signIn, signOut } from 'next-auth/react'
 import React from 'react'
+import { SessionWrapper } from '../Providers/SessionWrapper'
 
 const Header = () => {
   const { data: session } = useSession()
@@ -10,10 +11,10 @@ const Header = () => {
     <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
       <h1 className="text-lg font-semibold">Ticket7 Dashboard</h1>
 
-      {/* Conditionally render content based on session */}
+    
       {session ? (
         <div className="flex items-center space-x-4">
-          {/* Display user's profile image and name */}
+     
           <div className="flex items-center space-x-2">
             <img
               src={session.user?.image || '/default-profile.png'}
@@ -23,7 +24,7 @@ const Header = () => {
             <span>{session.user?.name}</span>
           </div>
 
-          {/* Logout button */}
+    
           <button
             onClick={() => signOut()}
             className="bg-red-500 px-4 py-2 rounded text-white"
@@ -33,7 +34,7 @@ const Header = () => {
         </div>
       ) : (
         <div className="flex space-x-4">
-          {/* Sign-in buttons for Google and GitHub */}
+     
           <button
             onClick={() => signIn('google')}
             className="bg-blue-500 px-4 py-2 rounded text-white"
@@ -49,6 +50,7 @@ const Header = () => {
         </div>
       )}
     </header>
+ 
   )
 }
 

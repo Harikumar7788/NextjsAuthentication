@@ -1,5 +1,5 @@
 import React from "react";
-import Ticket from "../../app/components/Ticket";
+import Ticket from "../../app/components/ui/Ticket";
 
 export default function TicketsPage() {
   return (
