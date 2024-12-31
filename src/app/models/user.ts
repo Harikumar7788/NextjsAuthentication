@@ -1,13 +1,9 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
-const UserSchema = new Schema(
-  {
-    name: { type: String },
-    email: { type: String, unique: true, required: true },
-    image: { type: String },
-    role: { type: String, default: "user" },
-  },
-  { timestamps: true }
-);
+const userSchema = new Schema({
+  email: { type: String, required: true, unique: true }, // Unique field for email
+  password: { type: String, required: true },           // Password field
+});
 
-export const User = models.User || model("User", UserSchema);
+// Remove any existing index related to username if it exists
+export  const User = models.User || model("User", userSchema);

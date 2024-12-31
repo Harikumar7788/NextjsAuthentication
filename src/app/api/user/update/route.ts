@@ -1,50 +1,45 @@
-import { NextAuthOptions } from "next-auth";
-import GithubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import { connectToDatabase } from "./mongoose";
-import { User } from "../models/User";
+import { hash } from 'bcryptjs';
+import { getSession } from 'next-auth/react';
+import { connectToDatabase } from '@/lib/mongoose';
+import { User } from '../../../models/user';
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        await connectToDatabase();
-        const user = await User.findOne({ email: credentials?.email });
-        if (user && bcrypt.compareSync(credentials!.password, user.password)) {
-          return user;
-        }
-        return null;
-      },
-    }),
-  ],
-  callbacks: {
-    async signIn({ user }) {
-      await connectToDatabase();
-      const existingUser = await User.findOne({ email: user.email });
-      if (!existingUser) {
-        await User.create(user);
-      }
-      return true;
-    },
-    async session({ session }) {
-      const dbUser = await User.findOne({ email: session.user?.email });
-      session.user.role = dbUser?.role;
-      return session;
-    },
-  },
-};
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const session = await getSession({ req });
+
+  if (!session) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const { email, password } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    await connectToDatabase();
+
+    const user = await User.findById(session.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.email = email;
+
+    if (password) {
+      user.password = await hash(password, 10); // Hash new password
+    }
+
+    await user.save();
+
+    res.status(200).json({ message: 'Profile updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}

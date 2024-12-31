@@ -1,28 +1,29 @@
-'use client'
+'use client';
 
-import { signIn } from "next-auth/react"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: false,
-    })
+      redirect: false, // Prevent auto-redirect
+    });
 
     if (res?.error) {
-      alert("Invalid credentials")
+      alert(res.error); // Display error message
     } else {
-      router.push("/dashboard")
+      router.push("/dashboard"); // Redirect to dashboard on successful login
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -57,5 +58,5 @@ export default function Login() {
         </div>
       </div>
     </div>
-  )
+  );
 }
