@@ -1,25 +1,20 @@
-'use client';  
+'use client';
 
 import React from 'react';
 import Dashboard from '../components/ui/Dashboard';
 import Header from '../components/ui/Header';
-// import { useRouter } from 'next/router';
+import { SessionProvider } from 'next-auth/react';
 
-const LandingPage = () => {
-  // const router = useRouter();  
+interface LandingPageProps {
+  session?: any;  
+}
 
-  const handleLoginClick = () => {
-    // router.push('/login');  
-  };
-
-  const handleRegisterClick = () => {
-    // router.push('/register');  
-  };
-
+const LandingPage: React.FC<LandingPageProps> = ({ session }) => {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-teal-500">
-      <Dashboard/>
-    </div>
+    <SessionProvider session={session}>
+           <Header/>
+        <Dashboard/>
+    </SessionProvider>
   );
 };
 
