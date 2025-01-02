@@ -1,5 +1,5 @@
 // src/app/layout.tsx or src/app/_layout.tsx (depending on your Next.js version)
-import { SessionWrapper } from '../components/Providers/SessionWrapper';
+// import { SessionWrapper } from '../components/Providers/SessionWrapper';
 import { Metadata } from 'next';
 import './globals.css';
 

@@ -69,7 +69,7 @@ export default function Login() {
           <Button
             type="submit"
             color="green"
-            disabled={loading}
+
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </Button>

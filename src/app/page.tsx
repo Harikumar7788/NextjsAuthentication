@@ -5,15 +5,11 @@ import Dashboard from '../components/ui/Dashboard';
 import Header from '../components/ui/Header';
 import { SessionProvider } from 'next-auth/react';
 
-interface LandingPageProps {
-  session?: any;  
-}
-
-const LandingPage: React.FC<LandingPageProps> = ({ session }) => {
+const LandingPage: React.FC = () => {
   return (
-    <SessionProvider session={session}>
-           <Header/>
-        <Dashboard/>
+    <SessionProvider>
+    <Header title="My Dashboard"/>
+      <Dashboard />
     </SessionProvider>
   );
 };

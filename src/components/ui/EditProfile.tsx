@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import TextInput from '../Common/TextInput';
 import Button from '../Common/Button';
@@ -49,11 +47,14 @@ const EditProfile = ({ user, onClose }: { user?: User; onClose: () => void }) =>
   
       setSuccess('Profile updated successfully!');
       setTimeout(onClose, 2000);
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'An error occurred');
+      } else {
+        setError('An unknown error occurred');
+      }
     }
   };
-  
 
   if (!user) {
     return (
@@ -75,7 +76,7 @@ const EditProfile = ({ user, onClose }: { user?: User; onClose: () => void }) =>
             type="email"
             value={email}
             onChange={setEmail}
-            placeholder='Email'
+            placeholder="Email"
             required
           />
           <TextInput

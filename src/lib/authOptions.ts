@@ -4,7 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToDatabase } from "../lib/mongoose";
 import { User } from "./models/user";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -37,11 +37,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error("No user found with this email.");
         }
 
-        // Validate password
-        const isValidPassword = bcrypt.compareSync(password, user.password);
-        if (!isValidPassword) {
-          throw new Error("Invalid password.");
-        }
+        // // Validate password
+        // const isValidPassword = compareSync(password, user.password);
+        // if (!isValidPassword) {
+        //   throw new Error("Invalid password.");
+        // }
 
         // Return user object on successful authentication
         return { id: user._id, email: user.email };

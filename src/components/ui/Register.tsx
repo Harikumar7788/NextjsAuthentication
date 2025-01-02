@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TextInput from '../Common/TextInput';
@@ -33,7 +31,7 @@ export default function Register() {
         const data = await res.json();
         setError(data.error || 'Failed to register');
       }
-    } catch (err) {
+    } catch {
       setLoading(false);
       setError('An unexpected error occurred');
     }
@@ -68,7 +66,6 @@ export default function Register() {
           <Button
             type="submit"
             color="green"
-            disabled={loading}
           >
             {loading ? 'Registering...' : 'Register'}
           </Button>

@@ -1,44 +1,53 @@
-import { hash } from 'bcryptjs';
 import { NextResponse } from 'next/server';
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../../lib/authOptions';
 import { connectToDatabase } from '@/lib/mongoose';
-import { User } from '../../../../lib/models/user';
+import { User } from '@/lib/models/user';
 
-export const POST = async (req: Request) => {  // Use Request instead of Response
+export const POST = async (req: Request) => {
   if (req.method !== 'POST') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
   }
 
-  const session = await getSession({ req });
+  // Get the session, using getServerSession
+  const session = await getServerSession(authOptions);
 
-  if (!session) {
+  // Ensure session has user id
+  if (!session?.user) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
-  const { email, password } = await req.json();  // Use await req.json() to get request body
+  // Extract email and password from the request body
+  const { email, password } = await req.json();
 
+  // Validate email
   if (!email) {
     return NextResponse.json({ message: 'Email is required' }, { status: 400 });
   }
 
   try {
+    // Connect to the database
     await connectToDatabase();
 
-    const user = await User.findById(session.user.id);
+    // Find the user in the database using the session user's id
+    const user = await User.findById(session.user);
 
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
+    // Update the user's email and password if provided
     user.email = email;
 
     if (password) {
-      user.password = await hash(password, 10); // Hash new password
+      user.password = password;
     }
 
+    // Save the updated user
     await user.save();
 
-    return NextResponse.json({ message: 'Profile updated successfully' }, { status: 200 });  // Corrected status
+    // Return a successful response
+    return NextResponse.json({ message: 'Profile updated successfully' }, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

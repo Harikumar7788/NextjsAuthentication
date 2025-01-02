@@ -1,7 +1,7 @@
-// pages/_app.js or pages/_app.tsx
+import { AppProps } from 'next/app'; // Import AppProps from Next.js
 import { SessionProvider } from "next-auth/react";
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider session={pageProps.session}>
       <Component {...pageProps} />

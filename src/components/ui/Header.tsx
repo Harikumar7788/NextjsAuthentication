@@ -45,7 +45,7 @@ const Header = ({ title }: HeaderProps) => {
               Edit Profile
             </Button>
             <Button
-              color="red"
+              color="green"
               onClick={() => signOut()}
             >
               Sign Out
@@ -58,7 +58,8 @@ const Header = ({ title }: HeaderProps) => {
 
       {isEditing && session && (
         <Modal onClose={handleClose}>
-          <EditProfile user={session.user} onClose={handleClose} />
+          <EditProfile user={session.user?.email ? { email: session.user.email } : undefined} onClose={handleClose} />
+
         </Modal>
       )}
     </header>
