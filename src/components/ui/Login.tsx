@@ -1,27 +1,42 @@
 'use client';
 
-import { signIn } from "next-auth/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import TextInput from '../Common/TextInput';
+import Button from '../Common/Button';
+import Message from '../Common/Message';
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
-    const res = await signIn("credentials", {
+    if (!email || !password) {
+      setError('Please fill in all fields.');
+      setLoading(false);
+      return;
+    }
+
+    const res = await signIn('credentials', {
       email,
       password,
-      redirect: false, // Prevent auto-redirect
+      redirect: false,
     });
 
+    setLoading(false);
+
     if (res?.error) {
-      alert(res.error); // Display error message
+      setError(res.error || 'Invalid credentials');
     } else {
-      router.push("/dashboard"); // Redirect to dashboard on successful login
+      router.push('/dashboard');
     }
   };
 
@@ -29,33 +44,36 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="p-6 max-w-md w-full bg-white rounded shadow">
         <h2 className="text-2xl font-bold mb-4">Sign In</h2>
+
+        {error && <Message type="error" text={error} />}
+
         <form onSubmit={handleSubmit}>
-          <input
+          <TextInput
+            label="Email"
             type="email"
-            placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 w-full mb-4"
+            onChange={setEmail}
+            placeholder="Enter your email"
+            required
           />
-          <input
+
+          <TextInput
+            label="Password"
             type="password"
-            placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 w-full mb-4"
+            onChange={setPassword}
+            placeholder="Enter your password"
+            required
           />
-          <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
-            Sign In
-          </button>
+
+          <Button
+            type="submit"
+            color="green"
+            disabled={loading}
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </Button>
         </form>
-        <div className="mt-4">
-          <button onClick={() => signIn("google")} className="w-full bg-red-500 text-white p-2 rounded">
-            Sign in with Google
-          </button>
-          <button onClick={() => signIn("github")} className="w-full bg-gray-800 text-white p-2 rounded mt-2">
-            Sign in with GitHub
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "../../../../lib/mongoose";
-import { User } from "../../../models/user";
+import { User } from "../../../../lib/models/user";
 import bcrypt from "bcryptjs";
 
 

@@ -1,48 +1,56 @@
-'use client'
+'use client';
 
-import { useSession, signIn, signOut } from "next-auth/react"
-import React from "react"
+import { useSession, signOut } from 'next-auth/react';
+import { useState } from 'react';
+import EditProfile from './EditProfile';
+import Avatar from '../Common/Avatar';  // Reusable Avatar component
+import Button from '../Common/Button';  // Reusable Button component
 
+// Dashboard component
 const Dashboard = () => {
-    const { data: session } = useSession()
+  const { data: session } = useSession();
+  const [isEditing, setIsEditing] = useState(false);
 
-    return (
-        <div className="min-h-screen flex items-center justify-center">
-            {session ? (
-                <div>
+  const handleEditProfile = () => {
+    setIsEditing(true);
+  };
 
-                     <img src = {session.user?.image} className = "rounded-full w-20 h-20"/>
-                    <h1>Welcome, {session.user?.name}</h1>
-                    <p>Email Id {session.user?.email} </p>
+  const handleClose = () => {
+    setIsEditing(false);
+  };
 
-                                       
-                    <button 
-                        onClick={() => signOut()} 
-                        className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-                    >
-                        Sign Out
-                    </button>
-                </div>
-            ) : (
-                <div className="text-center">
-                    <h1>Please sign in</h1>
-                    <button 
-                        onClick={() => signIn('google')} 
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-                    >
-                        Sign in with Google
-                    </button>
-                    <button 
-                        onClick={() => signIn('github')} 
-                        className="mt-4 px-4 py-2 bg-gray-800 text-white rounded ml-2"
-                    >
-                        Sign in with GitHub
-                    </button>
-                </div>
-            )}
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="bg-white p-8 rounded shadow-lg w-full max-w-md text-center">
+        <h1 className="text-3xl font-bold mb-6 text-blue-600">Dashboard</h1>
+        <div className="flex flex-col items-center">
+          {session ? (
+            <>
+              <Avatar image={session.user?.image} alt="User Avatar" size="w-24 h-24" />
+              <div>
+                <p className="text-xl font-medium">{session.user?.name}</p>
+                <span className="text-gray-500">{session.user?.email}</span>
+              </div>
+              <div className="mt-6 space-x-4">
+                <Button onClick={handleEditProfile} color="blue">
+                  Edit Profile
+                </Button>
+                <Button onClick={() => signOut()} color="red">
+                  Sign Out
+                </Button>
+              </div>
+            </>
+          ) : (
+            <span className="text-gray-500">Sign In...</span>
+          )}
         </div>
-      
-    )
-}
 
-export default Dashboard
+        {isEditing && session && (
+          <EditProfile user={session.user} onClose={handleClose} />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

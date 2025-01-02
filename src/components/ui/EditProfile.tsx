@@ -1,75 +1,108 @@
-import React, { useState } from 'react';
+'use client';
 
-interface EditProfileProps {
-  user: any;
-  onClose: () => void;
+import { useState, useEffect } from 'react';
+import TextInput from '../Common/TextInput';
+import Button from '../Common/Button';
+import Message from '../Common/Message';
+
+interface User {
+  email?: string;
 }
 
-const EditProfile: React.FC<EditProfileProps> = ({ user, onClose }) => {
-  const [name, setName] = useState(user?.name || '');
-  const [email, setEmail] = useState(user?.email || '');
-  const [image, setImage] = useState(user?.image || '');
+const EditProfile = ({ user, onClose }: { user?: User; onClose: () => void }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    if (user && user.email) {
+      setEmail(user.email);
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Update user information in the database
-    const res = await fetch('/api/user/update', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, image }),
-    });
-
-    if (res.ok) {
-      alert('Profile updated successfully!');
-      onClose(); // Close the modal
-    } else {
-      alert('Failed to update profile.');
+    setError('');
+    setSuccess('');
+  
+    if (password && password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+  
+    try {
+      const response = await fetch('/api/user/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      const result = await response.json(); // Ensure you parse the JSON correctly
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to update profile');
+      }
+  
+      setSuccess('Profile updated successfully!');
+      setTimeout(onClose, 2000);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
     }
   };
+  
+
+  if (!user) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-slate-400 p-6 rounded shadow-lg w-full max-w-md">
+          <h2 className="text-2xl font-bold mb-4">Loading Profile...</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded shadow max-w-md w-full">
-        <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
+      <div className="bg-slate-400 p-6 rounded shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border p-2 w-full mb-4"
-          />
-          <input
+          <TextInput
+            label="Email"
             type="email"
-            placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 w-full mb-4"
+            onChange={setEmail}
+            placeholder='Email'
+            required
           />
-          <input
-            type="text"
-            placeholder="Image URL"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            className="border p-2 w-full mb-4"
+          <TextInput
+            label="New Password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="New password"
           />
-          <div className="flex justify-between">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-500 px-4 py-2 rounded text-white"
-            >
+          <TextInput
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            placeholder="Confirm password"
+          />
+
+          {error && <Message type="error" text={error} />}
+          {success && <Message type="success" text={success} />}
+
+          <div className="flex justify-end space-x-4">
+            <Button onClick={onClose} color="gray">
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-green-500 px-4 py-2 rounded text-white"
-            >
+            </Button>
+            <Button type="submit" color="green">
               Save Changes
-            </button>
+            </Button>
           </div>
         </form>
       </div>

@@ -1,32 +1,41 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import TextInput from '../Common/TextInput';
+import Button from '../Common/Button';
+import Message from '../Common/Message';
 
 export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Reset error message
+    setError('');
+    setLoading(true);
+
     try {
-      const res = await fetch("/api/user/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/user/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
+      setLoading(false);
+
       if (res.ok) {
-        router.push("/login"); // Redirect to login page
+        router.push('/login');
       } else {
         const data = await res.json();
-        setError(data.error || "Failed to register");
+        setError(data.error || 'Failed to register');
       }
     } catch (err) {
-      setError("An unexpected error occurred");
+      setLoading(false);
+      setError('An unexpected error occurred');
     }
   };
 
@@ -34,25 +43,35 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="p-6 max-w-md w-full bg-white rounded shadow">
         <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        {error && <Message type="error" text={error} />}
+
         <form onSubmit={handleRegister}>
-          <input
+          <TextInput
+            label="Email"
             type="email"
-            placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 w-full mb-4 rounded"
+            onChange={setEmail}
+            placeholder="Enter your email"
+            required
           />
-          <input
+
+          <TextInput
+            label="Password"
             type="password"
-            placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 w-full mb-4 rounded"
+            onChange={setPassword}
+            placeholder="Enter your password"
+            required
           />
-          <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-            Register
-          </button>
+
+          <Button
+            type="submit"
+            color="green"
+            disabled={loading}
+          >
+            {loading ? 'Registering...' : 'Register'}
+          </Button>
         </form>
       </div>
     </div>
