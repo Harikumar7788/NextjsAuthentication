@@ -18,8 +18,12 @@ export async function connectToDatabase() {
   if (!cached.promise) {
     const options = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 15000,  
+      socketTimeoutMS: 60000,           
     };
+    console.log("Attempting to connect to MongoDB...");
     cached.promise = mongoose.connect(MONGODB_URI, options).then((m) => m);
+    console.log("Connected to MongoDB");
   }
   cached.conn = await cached.promise;
   return cached.conn;

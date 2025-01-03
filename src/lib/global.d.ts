@@ -1,4 +1,4 @@
-// global.d.ts
+
 import { Connection } from "mongoose";
 
 declare global {

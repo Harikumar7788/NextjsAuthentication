@@ -6,6 +6,7 @@ import EditProfile from './EditProfile';
 import Button from '../Common/Button';
 import Avatar from '../Common/Avatar';
 import Modal from '../Common/Modal';
+import Link from 'next/link';
 
 interface HeaderProps {
   title: string;
@@ -29,13 +30,13 @@ const Header = ({ title }: HeaderProps) => {
       <div className="flex items-center space-x-4">
         {session ? (
           <>
-            <Avatar
+            {/* <Avatar
               src={session.user?.image || '/default-avatar.png'}
               alt="User Avatar"
               size="medium"
-            />
+            /> */}
             <div className="text-right">
-              <p className="font-medium">{session.user?.name}</p>
+              {/* <p className="font-medium">{session.user?.name}</p> */}
               <span className="text-sm">{session.user?.email}</span>
             </div>
             <Button
@@ -52,7 +53,7 @@ const Header = ({ title }: HeaderProps) => {
             </Button>
           </>
         ) : (
-          <span>Loading...</span>
+          <Link href='/login'>  <span>SIGN IN</span> </Link>
         )}
       </div>
 

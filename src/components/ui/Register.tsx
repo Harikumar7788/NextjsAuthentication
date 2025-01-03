@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import TextInput from '../Common/TextInput';
 import Button from '../Common/Button';
 import Message from '../Common/Message';
+import Link from 'next/link';  // Import Link from next/link
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -40,8 +41,9 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="p-6 max-w-md w-full bg-white rounded shadow">
-        <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
-
+        <h2 className="text-2xl font-bold mb-4 text-cyan-700">Register</h2>
+        
+        {/* Display error message if exists */}
         {error && <Message type="error" text={error} />}
 
         <form onSubmit={handleRegister}>
@@ -69,6 +71,9 @@ export default function Register() {
           >
             {loading ? 'Registering...' : 'Register'}
           </Button>
+
+          {/* Use Link from next/link instead of <a> */}
+          <h2>Already Have an Account? <Link href="/login">Login</Link></h2>
         </form>
       </div>
     </div>

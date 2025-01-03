@@ -1,13 +1,13 @@
 import { Schema, model, models } from 'mongoose';
 
-// Create a new schema with only 'email' and 'password'
+
 const userSchema = new Schema(
   {
-    email: { type: String, required: true, unique: true },  // Make 'email' unique
-    password: { type: String, required: true }  // Password field
+    email: { type: String, required: true, unique: true },  
+    password: { type: String, required: true } 
   },
-  { collection: 'new_users' } // Specify the new collection name
+  { collection: 'new_users' } 
 );
 
-// Check if the model already exists to prevent redefinition
+
 export const User = models.User || model('User', userSchema);

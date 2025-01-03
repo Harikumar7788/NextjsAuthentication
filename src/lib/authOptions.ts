@@ -1,10 +1,31 @@
+// src/app/api/auth/[...nextauth]/route.ts
+
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToDatabase } from "../lib/mongoose";
-import { User } from "./models/user";
-// import bcrypt from "bcryptjs";
+import { User } from "../lib/models/user";
+import crypto from "crypto";
+
+function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
+
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;  
+      email: string;  
+    };
+  }
+
+  interface JWT {
+    id: string;  
+    email: string;  
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -31,20 +52,18 @@ export const authOptions: NextAuthOptions = {
 
         await connectToDatabase();
 
-        // Find user in the database
         const user = await User.findOne({ email });
         if (!user) {
           throw new Error("No user found with this email.");
         }
 
-        // // Validate password
-        // const isValidPassword = compareSync(password, user.password);
-        // if (!isValidPassword) {
-        //   throw new Error("Invalid password.");
-        // }
+        const hashedPassword = hashPassword(password);
+        if (user.password !== hashedPassword) {
+          throw new Error("Invalid password.");
+        }
 
-        // Return user object on successful authentication
-        return { id: user._id, email: user.email };
+
+        return { id: user._id.toString(), email: user.email };
       },
     }),
   ],
@@ -60,14 +79,17 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.user = token;
+      session.user = {
+        id: token.id as string,
+        email: token.email as string,
+      };
       return session;
     },
   },
   pages: {
-    signIn: "/login", // Custom login page
+    signIn: "/login", 
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET, 
 };
 
 export default authOptions;
